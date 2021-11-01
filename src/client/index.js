@@ -1,8 +1,12 @@
 
 // list of tupes (question, dict of (int, string choice), right choice)
 var questionQueue = []
+var questionRenderFlag = false;
 const kRefreshThreshold = 5;
 const kRefreshSize = 20;
+const kLoadingMessage = 'Loading new questions. Please wait.';
+const kCorrectAnswerMessage = "You got the answer correct!!";
+const kWrongAnswerMessage = "Incorrect!! The correct answer is ";
 
 const InitGame = () => {
   RefillQuestions();
@@ -14,20 +18,28 @@ const RenderQuestion = () => {
   if (oldGameArea != null)
     oldGameArea.parentNode.removeChild(oldGameArea);
 
-  curQuestion = questionQueue[0];
   var gameArea = document.createElement('div');
   gameArea.id = 'game-area';
 
-  var questionPrompt = document.createElement('p');
-  questionPrompt.appendChild(document.createTextNode(curQuestion[0]));
-  gameArea.appendChild(questionPrompt);
+  if (questionQueue.length == 0) {
+    gameArea.appendChild(document.createElement('h1').appendChild(
+      document.createTextNode(kLoadingMessage)));
+      questionRenderFlag = true;
+  }
+  else {
+    curQuestion = questionQueue[0];
+    var questionPrompt = document.createElement('p');
+    questionPrompt.appendChild(document.createTextNode(curQuestion[0]));
+    gameArea.appendChild(questionPrompt);
 
-  for (let i = 0; i < 4; i++) {
-    var answerChoice = document.createElement('button');
-    answerChoice.appendChild(document.createTextNode(curQuestion[1][i]));
-    answerChoice.id = ''.concat('c', i);
-    answerChoice.onclick = () => { EvaluateQuestion(i) };
-    gameArea.appendChild(answerChoice);
+    for (let i = 0; i < 4; i++) {
+      var answerChoice = document.createElement('button');
+      answerChoice.appendChild(document.createTextNode(curQuestion[1][i]));
+      answerChoice.id = ''.concat('c', i+1);
+      answerChoice.onclick = () => { EvaluateQuestion(i) };
+      gameArea.appendChild(answerChoice);
+    }
+    questionRenderFlag = false;
   }
 
   document.getElementById('body').appendChild(gameArea);
@@ -43,27 +55,24 @@ const RefillQuestions = () => {
 }
 
 const EvaluateQuestion = (answerChoice) => {
-  const curQuestion = questionQueue[0];//questionQueue.shift();
+  const curQuestion = questionQueue.shift();
   if (answerChoice == curQuestion[2]) {
-    console.log("right");
+    alert(kCorrectAnswerMessage)
   }
   else {
-    console.log("wrong");
+    alert(kWrongAnswerMessage.concat(curQuestion[1][2]));
   }
-  RenderQuestion();
+  questionRenderFlag = true;
 }
 
 setInterval(() => {
     if (questionQueue.length <= kRefreshThreshold) {
       RefillQuestions();
       console.log("calling backend for more questions");
-      // add the backend response to the queue
     }
-}, 100000);
-// display questions
+}, 5000);
 
-//evbaulates answers
-
-//fetch new questions from backend
-
-// having a queue of questiosn
+setInterval(() => {
+  if (questionRenderFlag)
+    RenderQuestion();
+}, 10);
