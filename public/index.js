@@ -3,7 +3,10 @@
 var questionQueue = []
 var questionRenderFlag = false;
 const kRefreshThreshold = 5;
-const kBackendEndpoint = "http://localhost:3000";
+const kRefreshSize = 20;
+const kLoadingMessage = 'Loading new questions. Please wait.';
+const kCorrectAnswerMessage = "You got the answer correct!!";
+const kWrongAnswerMessage = "Incorrect!! The correct answer is ";
 
 const InitGame = () => {
   RefillQuestions();
@@ -20,20 +23,19 @@ const RenderQuestion = () => {
 
   if (questionQueue.length == 0) {
     gameArea.appendChild(document.createElement('h1').appendChild(
-      document.createTextNode('Loading new questions. Please wait.')));
-    questionRenderFlag = true;
+      document.createTextNode(kLoadingMessage)));
+      questionRenderFlag = true;
   }
   else {
     curQuestion = questionQueue[0];
     var questionPrompt = document.createElement('p');
     questionPrompt.appendChild(document.createTextNode(curQuestion[0]));
-    questionPrompt.id = 'qp';
     gameArea.appendChild(questionPrompt);
 
     for (let i = 0; i < 4; i++) {
       var answerChoice = document.createElement('button');
       answerChoice.appendChild(document.createTextNode(curQuestion[1][i]));
-      answerChoice.id = ''.concat('c', i + 1);
+      answerChoice.id = ''.concat('c', i+1);
       answerChoice.onclick = () => { EvaluateQuestion(i) };
       gameArea.appendChild(answerChoice);
     }
@@ -44,27 +46,30 @@ const RenderQuestion = () => {
 }
 
 const RefillQuestions = () => {
-  fetch(kBackendEndpoint).then(response => response.json()).then(data => {
-    data["questions"].forEach(question => {
-      questionQueue.push(question);
-    });
-  });
+  questionQueue.push(["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.", {
+    0: "Movie 1",
+    1: "Movie 2",
+    2: "Movie 3",
+    3: "Movie 4"
+  }, 1]);
 }
 
 const EvaluateQuestion = (answerChoice) => {
   const curQuestion = questionQueue.shift();
   if (answerChoice == curQuestion[2]) {
-    alert("You got the answer correct!!")
+    alert(kCorrectAnswerMessage)
   }
   else {
-    alert("Incorrect!! The correct answer is ".concat(curQuestion[1][2]));
+    alert(kWrongAnswerMessage.concat(curQuestion[1][2]));
   }
   questionRenderFlag = true;
 }
 
 setInterval(() => {
-  if (questionQueue.length <= kRefreshThreshold)
-    RefillQuestions();
+    if (questionQueue.length <= kRefreshThreshold) {
+      RefillQuestions();
+      console.log("calling backend for more questions");
+    }
 }, 5000);
 
 setInterval(() => {
