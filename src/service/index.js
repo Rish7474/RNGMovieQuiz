@@ -1,7 +1,15 @@
-import Express from "express";
 
-const app = Express();
+const express = require('express');
+const app = express();
 const port = 3000;
+const mysql = require('mysql');
+const db_ptr = mysql.createConnection({
+    host: 'address',
+    user: 'root',
+    password: 'password',
+    database: 'dn_name',
+    connectTimeout: 100000,
+});
 
 const testJSON = {
     questions: [
@@ -28,5 +36,9 @@ app.get('/', (req, res) => {
     res.json(testJSON);
 });
 
-
+db_ptr.connect();
+db_ptr.query('SELECT 1 + 1 as s', (error, results, fields) => {
+    console.log('hello');
+    db_ptr.end();
+});
 app.listen(port, () => console.log("Listening on port", port));
