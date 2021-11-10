@@ -13,8 +13,21 @@
     <button id="start" onclick="InitGame()">Start Game</button>
     <form>
       <input type="text" id="user-id" placeholder="Enter New User ID">
+      <input type="text" id="fname" placeholder="Enter You First Name">
+      <input type="text" id="lname" placeholder="Enter You Last Name">
     </form>
     <button id="add-user-btn" onclick="AddUser()">Add User</button>
+
+    <form>
+      <input type="text" id="del-user-id" placeholder="Enter the User ID you want to delete">
+    </form>
+    <button id="del-user-btn" onclick="DeleteUser()">Delete User</button>
+
+    <form>
+      <input type="text" id="update-user-id" placeholder="Enter the User ID you to update">
+      <input type="text" id="update-lname" placeholder="Enter Your New Last Name">
+    </form>
+    <button id='lname-update-btn' onclick="UpdateUser()">Update Last Name</button>
   </div>
   <script src="index.js"> </script>
 </body>

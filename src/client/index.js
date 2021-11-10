@@ -44,23 +44,57 @@ const RenderQuestion = () => {
 }
 
 const AddUser = () => {
-  console.log(JSON.stringify({
-    user_id: document.getElementById('user-id').value
-  }));
-
   var data = {
-    "user_id": document.getElementById('user-id').value
+    "userId": document.getElementById('user-id').value,
+    "fname": document.getElementById('fname').value,
+    "lname": document.getElementById('lname').value
   }
 
   var headers = {
     'Content-Type': 'application/json',
-    "Access-Control-Origin": "*"
+    'Access-Control-Allow-Origin': '*'
   }
 
 
   fetch(kBackendEndpoint + '/add-user', {
     method: 'POST',
-    mode: "no-cors",
+    headers: headers,
+    body: JSON.stringify(data)
+  }).then(res => { console.log(res.json()) });
+};
+
+const DeleteUser = () => {
+  var data = {
+    "userId": document.getElementById('user-id').value,
+  }
+
+  var headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  }
+
+
+  fetch(kBackendEndpoint + '/delete-user', {
+    method: 'post',
+    headers: headers,
+    body: JSON.stringify(data)
+  }).then(res => { console.log(res.json()) });
+};
+
+const UpdateUser = () => {
+  var data = {
+    "userId": document.getElementById('update-user-id').value,
+    "lname": document.getElementById('update-lname').value
+  }
+
+  var headers = {
+    'Content-Type': 'application/json',
+    'Access-Control-Allow-Origin': '*'
+  }
+
+
+  fetch(kBackendEndpoint + '/update-user', {
+    method: 'POST',
     headers: headers,
     body: JSON.stringify(data)
   }).then(res => { console.log(res.json()) });
