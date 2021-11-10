@@ -43,8 +43,31 @@ const RenderQuestion = () => {
   document.getElementById('body').appendChild(gameArea);
 }
 
+const AddUser = () => {
+  console.log(JSON.stringify({
+    user_id: document.getElementById('user-id').value
+  }));
+
+  var data = {
+    "user_id": document.getElementById('user-id').value
+  }
+
+  var headers = {
+    'Content-Type': 'application/json',
+    "Access-Control-Origin": "*"
+  }
+
+
+  fetch(kBackendEndpoint + '/add-user', {
+    method: 'POST',
+    mode: "no-cors",
+    headers: headers,
+    body: JSON.stringify(data)
+  }).then(res => { console.log(res.json()) });
+};
+
 const RefillQuestions = () => {
-  fetch(kBackendEndpoint).then(response => response.json()).then(data => {
+  fetch(kBackendEndpoint + '/rng-gen').then(response => response.json()).then(data => {
     data["questions"].forEach(question => {
       questionQueue.push(question);
     });
