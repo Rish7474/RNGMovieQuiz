@@ -27,7 +27,7 @@ const RenderQuestion = () => {
   playerGrade = document.createElement('h1');
   playerGrade.appendChild(document.createTextNode("Grade: " + grade));
   playerGrade.id = 'pg';
-  
+
   gameArea.appendChild(correctPercentage);
   gameArea.appendChild(playerGrade);
 
@@ -57,7 +57,8 @@ const RenderQuestion = () => {
 }
 
 const RefillQuestions = () => {
-  fetch(kBackendEndpoint+'/rng-gen').then(response => response.json()).then(data => {
+  console.log("calling for more questions");
+  fetch(kBackendEndpoint + '/rng-gen').then(response => response.json()).then(data => {
     data["questions"].forEach(question => {
       questionQueue.push(question);
     });
