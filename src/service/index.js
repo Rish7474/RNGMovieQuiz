@@ -7,12 +7,8 @@ const app = express();
 const port = 3000;
 const mysql = require('mysql');
 const db_ptr = mysql.createConnection({
-    host: '',
-    user: '',
-    password: '',
-    database: '',
-    connectTimeout: 100000,
 });
+db_ptr.connect();
 
 const testJSON = {
     questions: [
@@ -37,41 +33,21 @@ const testJSON = {
 InsertUser = (userId, fname, lname) => {
     console.log("INSERTING");
     sql_query = "INSERT INTO users (id, first_name, last_name, score) VALUES ("+userId+",'"+fname+"','"+lname+"', 0);";
-    db_ptr.connect();
     db_ptr.query(sql_query, (error, results, fields) => {
         console.log(error);
-        console.log("DONE");
-        db_ptr.end();
     });
 };
 
 DeleteUser = (userId) => {
     sql_query = 'DELETE FROM users WHERE Id =' + userId;
     db_ptr.connect();
-    db_ptr.query(sql_query, (error, results, fields) => {
-        db_ptr.end();
-    });
+    db_ptr.query(sql_query, (error, results, fields) => {});
 };
 
 UpdateUser = (userId, lname) => {
     sql_query = "UPDATE users SET last_name = '"+lname+"' WHERE Id = " + userId;
     db_ptr.connect();
-    db_ptr.query(sql_query, (error, results, fields) => {
-        db_ptr.end();
-    });
-}
-
-FetchUserById = async (userId) => {
-    sql_query = "SELECT 1 + 1 as s";
-    ans = null;
-    db_ptr.connect();
-    db_ptr.query(sql_query, async (error, results, fields) => {
-        ans = results[0].s;
-        db_ptr.end();
-        return await ans;
-    });
-   // console.log(ans);
-    //sql_query = 
+    db_ptr.query(sql_query, (error, results, fields) => {});
 }
 
 app.use(express.urlencoded());
@@ -104,11 +80,4 @@ app.post('/update-user', (req, res) => {
     console.log(req_obj);
     UpdateUser(req_obj["userId"], req_obj["lname"]);
     res.status(200);
-});
-
-app.get('/search-user', (req, res) => {
-    console.log(req.query.userid);
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    FetchUserById(req.query.userid).then(result => console.log(result.data));
-   // res.json(FetchUserById(req.query.userid));
 });

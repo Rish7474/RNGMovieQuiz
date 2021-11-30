@@ -1,7 +1,9 @@
-
 // list of tupes (question, dict of (int, string choice), right choice)
 var questionQueue = []
 var questionRenderFlag = false;
+var correctAnswers = 0;
+var totalQuestions = 0;
+var grade = null;
 const kRefreshThreshold = 5;
 const kBackendEndpoint = "http://localhost:3000";
 
@@ -17,6 +19,17 @@ const RenderQuestion = () => {
 
   var gameArea = document.createElement('div');
   gameArea.id = 'game-area';
+
+  correctPercentage = document.createElement('h1');
+  correctPercentage.appendChild(document.createTextNode("Accuracy: " + ((correctAnswers / totalQuestions) * 100) + "%"));
+  correctPercentage.id = 'cp';
+
+  playerGrade = document.createElement('h1');
+  playerGrade.appendChild(document.createTextNode("Grade: " + grade));
+  playerGrade.id = 'pg';
+  
+  gameArea.appendChild(correctPercentage);
+  gameArea.appendChild(playerGrade);
 
   if (questionQueue.length == 0) {
     gameArea.appendChild(document.createElement('h1').appendChild(
@@ -43,65 +56,8 @@ const RenderQuestion = () => {
   document.getElementById('body').appendChild(gameArea);
 }
 
-const AddUser = () => {
-  var data = {
-    "userId": document.getElementById('user-id').value,
-    "fname": document.getElementById('fname').value,
-    "lname": document.getElementById('lname').value
-  }
-
-  var headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  }
-
-
-  fetch(kBackendEndpoint + '/add-user', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify(data)
-  }).then(res => { console.log(res.json()) });
-};
-
-const DeleteUser = () => {
-  var data = {
-    "userId": document.getElementById('user-id').value,
-  }
-
-  var headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  }
-
-
-  fetch(kBackendEndpoint + '/delete-user', {
-    method: 'post',
-    headers: headers,
-    body: JSON.stringify(data)
-  }).then(res => { console.log(res.json()) });
-};
-
-const UpdateUser = () => {
-  var data = {
-    "userId": document.getElementById('update-user-id').value,
-    "lname": document.getElementById('update-lname').value
-  }
-
-  var headers = {
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*'
-  }
-
-
-  fetch(kBackendEndpoint + '/update-user', {
-    method: 'POST',
-    headers: headers,
-    body: JSON.stringify(data)
-  }).then(res => { console.log(res.json()) });
-};
-
 const RefillQuestions = () => {
-  fetch(kBackendEndpoint + '/rng-gen').then(response => response.json()).then(data => {
+  fetch(kBackendEndpoint+'/rng-gen').then(response => response.json()).then(data => {
     data["questions"].forEach(question => {
       questionQueue.push(question);
     });
@@ -110,11 +66,13 @@ const RefillQuestions = () => {
 
 const EvaluateQuestion = (answerChoice) => {
   const curQuestion = questionQueue.shift();
-  if (answerChoice == curQuestion[2]) {
+  totalQuestions++;
+  if (curQuestion[1][answerChoice] == curQuestion[2]) {
+    correctAnswers++;
     alert("You got the answer correct!!")
   }
   else {
-    alert("Incorrect!! The correct answer is ".concat(curQuestion[1][2]));
+    alert("Incorrect!! The correct answer is ".concat(curQuestion[2]));
   }
   questionRenderFlag = true;
 }
